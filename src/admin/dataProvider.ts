@@ -81,7 +81,6 @@ export const memoryDataProvider: DataProvider = {
   createMany: async () => ({ data: [] } as any),
   updateMany: async () => ({ data: [] } as any),
   deleteMany: async () => ({ data: [] } as any),
-  getManyReference: async () => ({ data: [], total: 0 } as any),
 };
 
 export default memoryDataProvider;

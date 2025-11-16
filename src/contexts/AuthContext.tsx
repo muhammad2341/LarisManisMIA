@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import type { Product, Store } from "../types";
 
 interface User {
   id: string;
@@ -56,7 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (role === "seller") {
         storeId = `store-${Date.now()}`;
 
-        const newStore = {
+        const newStore: Store = {
           id: storeId,
           name: `Toko ${trimmedName}`,
           image: "",
@@ -66,7 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           whatsapp: trimmedPhone || "",
           mapUrl: "",
           rating: 0,
-          products: [],
+          products: [] as Product[],
           openingTime: "",
           closingTime: "",
         };
