@@ -278,7 +278,7 @@ export const LandingPage: React.FC = () => {
                   <ShoppingBag className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-3">Produk Beragam</h3>
-                <p className="text-gray-600 mb-4">500+ produk dari berbagai kategori UMKM lokal</p>
+                <p className="text-gray-600 mb-4">Variasi produk dari berbagai kategori UMKM lokal</p>
                 <div className="inline-flex items-center gap-2 text-orange-600 font-semibold group-hover:gap-4 transition-all">
                   <span>Jelajahi</span>
                   <ArrowRight className="w-4 h-4" />
@@ -325,7 +325,7 @@ export const LandingPage: React.FC = () => {
                 <div className="w-16 h-16 bg-gradient-to-r from-purple-400 to-pink-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                   <Zap className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">Transaksi Cepat</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3"> Cepat</h3>
                 <p className="text-gray-600 mb-4">Hubungi penjual langsung via WhatsApp</p>
                 <div className="inline-flex items-center gap-2 text-pink-600 font-semibold group-hover:gap-4 transition-all">
                   <span>Coba Sekarang</span>

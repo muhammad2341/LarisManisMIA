@@ -65,9 +65,55 @@ export const DashboardSeller: React.FC = () => {
     if (!user) return;
 
     // Get user's store data from dummyAccounts
-    const userAccount = JSON.parse(localStorage.getItem("umkm_users") || "[]").find(
+    const usersArr = JSON.parse(localStorage.getItem("umkm_users") || "[]");
+    const userAccount = usersArr.find(
       (u: any) => u.email === user.email
     );
+
+    // Fallback: if seller account has no storeId, create one now
+    if (userAccount && user?.role === "seller" && !userAccount.storeId) {
+      const newStoreId = `store-${Date.now()}`;
+      const newStore: Store = {
+        id: newStoreId,
+        name: `Toko ${userAccount.name || user.name}`,
+        image: "",
+        description: "Perbarui deskripsi toko Anda di halaman Info Toko.",
+        address: "",
+        whatsapp: userAccount.phone || "",
+        mapUrl: "",
+        rating: 0,
+        products: [],
+        category: "",
+        openingTime: "",
+        closingTime: "",
+      } as Store;
+
+      const savedStores = JSON.parse(localStorage.getItem("seller_stores") || "{}");
+      savedStores[newStoreId] = newStore;
+      localStorage.setItem("seller_stores", JSON.stringify(savedStores));
+
+      const savedProducts = JSON.parse(localStorage.getItem("seller_products") || "{}");
+      savedProducts[newStoreId] = [];
+      localStorage.setItem("seller_products", JSON.stringify(savedProducts));
+
+      // Update users storeId in umkm_users and current session user
+      const updatedUsers = usersArr.map((u: any) =>
+        u.email === user.email ? { ...u, storeId: newStoreId } : u
+      );
+      localStorage.setItem("umkm_users", JSON.stringify(updatedUsers));
+      const current = JSON.parse(localStorage.getItem("umkm_user") || "null");
+      if (current && current.email === user.email) {
+        localStorage.setItem(
+          "umkm_user",
+          JSON.stringify({ ...current, storeId: newStoreId })
+        );
+      }
+
+      // Initialize state immediately
+      setStoreData(newStore);
+      setProducts([]);
+      return;
+    }
 
     if (userAccount && userAccount.storeId) {
       // Load store from localStorage or dummy data
@@ -226,6 +272,16 @@ export const DashboardSeller: React.FC = () => {
     
     // Save back to localStorage
     localStorage.setItem("seller_products", JSON.stringify(existingProducts));
+  };
+
+  const handleImageFile = (file: File | null) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      setNewProduct((prev) => ({ ...prev, image: result }));
+    };
+    reader.readAsDataURL(file);
   };
 
   // Save store info to localStorage
@@ -716,17 +772,19 @@ export const DashboardSeller: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    URL Gambar
+                    Foto Produk
                   </label>
                   <input
-                    type="text"
-                    value={newProduct.image}
-                    onChange={(e) =>
-                      setNewProduct({ ...newProduct, image: e.target.value })
-                    }
-                    placeholder="https://example.com/image.jpg"
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-green-500"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageFile(e.target.files?.[0] || null)}
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-green-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
                   />
+                  {newProduct.image && (
+                    <div className="mt-2">
+                      <img src={newProduct.image} alt="Preview" className="h-24 w-24 object-cover rounded-md border" />
+                    </div>
+                  )}
                 </div>
 
                 <div>

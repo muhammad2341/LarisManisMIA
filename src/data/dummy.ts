@@ -24,7 +24,7 @@ export const stores: Store[] = [
     image: "/rawon_buhardi.webp",
     description: "Rawon Bu Hadi – Sate Sapi CR7 menyajikan rawon khas sejak 1995 dengan cita rasa autentik, kuah gurih pekat, serta pilihan menu lain seperti empal, nasi goreng rawon, dan sate sapi CR7. Dilengkapi aneka minuman dan suasana warung yang nyaman, kami buka setiap hari pukul 07.00–15.00.",
     address: "Surabaya",
-    whatsapp: "+628000000001",
+    whatsapp: "+6285888770210",
     mapUrl: "https://maps.google.com/maps?q=-7.27354575359409, 112.7843760281043",
     lat: -7.27354575359409,
     lng: 112.7843760281043,

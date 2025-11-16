@@ -51,8 +51,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return false;
       }
 
+      // Optionally create a default store for sellers
+      let storeId: string | undefined;
+      if (role === "seller") {
+        storeId = `store-${Date.now()}`;
+
+        const newStore = {
+          id: storeId,
+          name: `Toko ${trimmedName}`,
+          image: "",
+          description: "Perbarui deskripsi toko Anda di halaman Info Toko.",
+          category: "",
+          address: "",
+          whatsapp: trimmedPhone || "",
+          mapUrl: "",
+          rating: 0,
+          products: [],
+          openingTime: "",
+          closingTime: "",
+        };
+
+        const existingStores = JSON.parse(localStorage.getItem("seller_stores") || "{}");
+        existingStores[storeId] = newStore;
+        localStorage.setItem("seller_stores", JSON.stringify(existingStores));
+
+        const existingProducts = JSON.parse(localStorage.getItem("seller_products") || "{}");
+        existingProducts[storeId] = [];
+        localStorage.setItem("seller_products", JSON.stringify(existingProducts));
+      }
+
       // Create new user
-      const newUser = {
+      const newUser: any = {
         id: Date.now().toString(),
         name: trimmedName,
         email: trimmedEmail,
@@ -60,6 +89,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         password: trimmedPassword, // In production, this should be hashed!
         role,
       };
+      if (storeId) newUser.storeId = storeId;
 
       console.log("✅ Register success:", { email: trimmedEmail, role });
 
@@ -68,7 +98,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem("umkm_users", JSON.stringify(users));
 
       // Auto login after register
-      const userWithoutPassword = { id: newUser.id, name: trimmedName, email: trimmedEmail, phone: trimmedPhone, role };
+      const userWithoutPassword: any = { id: newUser.id, name: trimmedName, email: trimmedEmail, phone: trimmedPhone, role };
+      if (storeId) userWithoutPassword.storeId = storeId;
       setUser(userWithoutPassword);
       localStorage.setItem("umkm_user", JSON.stringify(userWithoutPassword));
 

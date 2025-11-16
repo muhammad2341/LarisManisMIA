@@ -17,8 +17,8 @@
 
   --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --glass-bg: rgba(17, 24, 39, 0.5);
-  --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
+  --text-primary: #000000;
+  --text-secondary: #1f2937;
   --border-glow: rgba(102, 126, 234, 0.3);
   --shadow-glow: 0 0 20px rgba(102, 126, 234, 0.4);
   
@@ -36,6 +36,27 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   overflow-x: hidden;
   color: var(--text-primary);
+}
+
+/* Ensure form control text appears black */
+input,
+textarea,
+select {
+  color: #000000;
+}
+
+/* Make placeholder text black as requested */
+::placeholder {
+  color: #000000;
+  opacity: 1; /* prevent lighter rendering in some browsers */
+}
+
+/* Vendor-specific placeholder selectors for broader support */
+::-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: #000000;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: #000000;
 }
 
 
