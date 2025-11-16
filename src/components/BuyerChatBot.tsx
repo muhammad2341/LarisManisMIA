@@ -189,7 +189,7 @@ export const BuyerChatBot: React.FC<{ products: Product[] }> = ({ products }) =>
     return () => window.removeEventListener("open-buyer-chatbot", openHandler as EventListener);
   }, []);
 
-  async function send(queryText: string) {
+  const send = React.useCallback(async (queryText: string) => {
     if (!queryText.trim()) return;
     const userMsg: Message = { role: "user", content: queryText };
     setMessages((prev) => [...prev, userMsg]);
@@ -297,7 +297,23 @@ export const BuyerChatBot: React.FC<{ products: Product[] }> = ({ products }) =>
 
     setMessages((prev) => [...prev, botMsg]);
     setInput("");
-  }
+  }, [products, navigate]);
+
+  React.useEffect(() => {
+    const onQuery = (e: Event) => {
+      const ce = e as CustomEvent<{ query?: string }>;
+      setOpen(true);
+      const q = ce?.detail?.query || "";
+      if (q) {
+        setTimeout(() => {
+          // fire and forget
+          void send(q);
+        }, 0);
+      }
+    };
+    window.addEventListener("buyer-chatbot-query", onQuery as EventListener);
+    return () => window.removeEventListener("buyer-chatbot-query", onQuery as EventListener);
+  }, [send]);
 
   const quicks = ["Makanan berkuah", "Sembako promo", "Makanan kering", "Skincare murah"];
 

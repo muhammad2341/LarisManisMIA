@@ -14,6 +14,7 @@ export const HomeBuyer: React.FC = () => {
   const [allProducts, setAllProducts] = useState<Product[]>(dummyProducts);
   const [allStores, setAllStores] = useState<Store[]>(stores);
   const [showAllStores, setShowAllStores] = useState(false);
+  const [chatInlineQuery, setChatInlineQuery] = useState("");
 
   useEffect(() => {
     const savedProducts = JSON.parse(localStorage.getItem("seller_products") || "{}");
@@ -79,26 +80,50 @@ export const HomeBuyer: React.FC = () => {
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }}></div>
       </div>
 
-      {/* Chatbot CTA above Search */}
+      {/* Inline Chat Bar directly above the search */}
       <section className="relative px-4 md:px-8 lg:px-12 max-w-7xl mx-auto">
-        <div className="mb-4 rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50 p-4 flex items-center justify-between">
+        <div className="mb-4 rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50 p-3">
           <div className="flex items-center gap-3">
             <div className="relative inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 text-white">
               <span className="text-sm font-extrabold">LM</span>
               <span className="absolute -top-1 -right-1 text-yellow-300 text-xs">✦</span>
             </div>
-            <div>
+            <div className="flex-1">
               <p className="font-extrabold text-slate-900">Tanyakan AI Laris Manis</p>
-              <p className="text-sm text-slate-700">Butuh rekomendasi cepat? Tanyakan harga, kalori, atau produk spesifik.</p>
+              <form
+                className="mt-2 flex items-center gap-2"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const q = chatInlineQuery.trim();
+                  if (!q) return;
+                  window.dispatchEvent(
+                    new CustomEvent("buyer-chatbot-query", { detail: { query: q } })
+                  );
+                  setChatInlineQuery("");
+                }}
+              >
+                <input
+                  type="text"
+                  value={chatInlineQuery}
+                  onChange={(e) => setChatInlineQuery(e.target.value)}
+                  placeholder="Contoh: harga < 30000, makanan berkuah, skincare murah..."
+                  className="flex-1 rounded-xl border border-blue-200 bg-white px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none"
+                />
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-3 text-white font-semibold shadow hover:opacity-90"
+                >
+                  Tanya
+                </button>
+                <button
+                  type="button"
+                  onClick={() => window.dispatchEvent(new Event("open-buyer-chatbot"))}
+                  className="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-slate-700 border border-slate-300 bg-white hover:bg-slate-50"
+                >
+                  Buka Chat
+                </button>
+              </form>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => window.dispatchEvent(new Event("open-buyer-chatbot"))}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 text-white font-semibold shadow hover:opacity-90"
-            >
-              Buka Chat
-            </button>
           </div>
         </div>
       </section>
