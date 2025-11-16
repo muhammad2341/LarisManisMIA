@@ -134,10 +134,10 @@ export const StoreCard: React.FC<StoreCardProps> = ({ store, index }) => {
           <Link
             to={`/maps?storeId=${store.id}`}
             onClick={(e) => e.stopPropagation()}
-            className="flex items-center justify-center gap-2 py-2 glass font-semibold rounded-xl hover-glow hover:-translate-y-1 transition-all duration-300"
+            className="flex items-center justify-center gap-2 py-2 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 hover:-translate-y-1 transition-all duration-300"
           >
-            <MapPin className="w-4 h-4 text-blue-600" />
-            <span className="text-sm text-slate-700">Lokasi</span>
+            <MapPin className="w-4 h-4" />
+            <span className="text-sm">Lokasi</span>
           </Link>
         </div>
       </div>

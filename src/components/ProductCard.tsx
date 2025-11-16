@@ -179,11 +179,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
           <Link
             to={`/maps?storeId=${encodeURIComponent(product.storeId)}`}
-            className="flex items-center justify-center gap-2 py-3 glass font-semibold rounded-xl hover-glow hover:-translate-y-1 transition-all duration-300"
+            className="flex items-center justify-center gap-2 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 hover:-translate-y-1 transition-all duration-300"
             aria-label={`Lihat lokasi toko ${product.storeName} pada peta`}
           >
-            <MapPin className="w-4 h-4 text-blue-600" />
-            <span className="text-sm text-slate-700">Lokasi</span>
+            <MapPin className="w-4 h-4" />
+            <span className="text-sm">Lokasi</span>
           </Link>
         </div>
       </div>

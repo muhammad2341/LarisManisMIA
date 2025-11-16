@@ -14,7 +14,6 @@ export const ProductDetail: React.FC = () => {
   const navigate = useNavigate();
   const { isFavorite, addToFavorites, removeFromFavorites } = useCart();
   const { user } = useAuth();
-  const [quantity, setQuantity] = useState(1);
   const [showSizeModal, setShowSizeModal] = useState(false);
   const [selectedSize, setSelectedSize] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -74,7 +73,7 @@ export const ProductDetail: React.FC = () => {
     const rawNumber = store?.whatsapp || "";
     const phone = rawNumber.replace(/[^0-9]/g, "");
     const sizeInfo = withSize && selectedSize ? `, Ukuran: ${selectedSize}` : "";
-    const msg = `Halo, saya ingin pesan ${product.name} (${quantity} pcs${sizeInfo}) dari toko ${store?.name}. Apakah tersedia?`;
+    const msg = `Halo, saya ingin pesan ${product.name}${sizeInfo} dari toko ${store?.name}. Apakah tersedia?`;
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
     window.open(url, "_blank");
     setTimeout(() => setIsProcessing(false), 400);
@@ -239,25 +238,7 @@ export const ProductDetail: React.FC = () => {
               </div>
             )}
 
-            {/* Quantity Selector */}
-            <div className="flex items-center space-x-4">
-              <span className="font-semibold text-gray-700">Jumlah:</span>
-              <div className="flex items-center border-2 border-gray-300 rounded-lg">
-                <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-4 py-2 hover:bg-gray-100 transition"
-                >
-                  −
-                </button>
-                <span className="px-6 py-2 font-semibold">{quantity}</span>
-                <button
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="px-4 py-2 hover:bg-gray-100 transition"
-                >
-                  +
-                </button>
-              </div>
-            </div>
+            {/* Quantity removed as requested */}
 
             {/* Action Buttons */}
             <div className="flex space-x-4">

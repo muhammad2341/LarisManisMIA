@@ -141,11 +141,10 @@ export const HomeBuyer: React.FC = () => {
           {/* Maps Button */}
           <Link
             to="/maps"
-            className="w-full md:w-auto inline-flex items-center justify-center gap-3 px-8 py-5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-bold rounded-2xl hover-lift hover-glow transition-all duration-300 group whitespace-nowrap"
+            className="w-full md:w-auto inline-flex items-center justify-center gap-3 px-8 py-5 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 transition-all duration-300 group whitespace-nowrap"
           >
             <MapPin className="w-5 h-5 group-hover:rotate-12 transition-transform" />
             <span>Peta Toko</span>
-            <Sparkles className="w-5 h-5 animate-pulse" />
           </Link>
         </div>
       </section>
