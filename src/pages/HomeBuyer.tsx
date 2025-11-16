@@ -103,6 +103,13 @@ export const HomeBuyer: React.FC = () => {
         </div>
       </section>
 
+      {/* Carousel Banner Promo */}
+      <section className="relative py-8 px-4 md:px-8 lg:px-12 max-w-7xl mx-auto">
+        <div className="mb-8">
+          <Carousel items={advertisementBanners} />
+        </div>
+      </section>
+
       {/* Search & Maps Section */}
       <section className="relative py-8 px-4 md:px-8 lg:px-12 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row gap-4 items-center">
