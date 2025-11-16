@@ -41,6 +41,14 @@ export const DashboardSeller: React.FC = () => {
     closingTime: "",
   });
 
+  // Revenue: monthly income entries per store
+  type RevenueRecord = { year: number; month: number; amount: number };
+  const [revenue, setRevenue] = useState<RevenueRecord[]>([]);
+  const [revForm, setRevForm] = useState<{ year: number; month: number; amount: string }>(() => {
+    const now = new Date();
+    return { year: now.getFullYear(), month: now.getMonth() + 1, amount: "" };
+  });
+
   // Dummy reviews data (in real app, fetch from backend)
   const [reviews, setReviews] = useState([
     { id: "1", customerName: "Budi Santoso", rating: 5, comment: "Produk sangat bagus, pengiriman cepat!", date: "2024-11-10", response: "" },
@@ -49,16 +57,25 @@ export const DashboardSeller: React.FC = () => {
   ]);
   const [responseText, setResponseText] = useState<{[key: string]: string}>({});
 
-  // Dummy sales data for chart
-  const salesData = [
-    { month: "Jan", sales: 1200000 },
-    { month: "Feb", sales: 1500000 },
-    { month: "Mar", sales: 1100000 },
-    { month: "Apr", sales: 1800000 },
-    { month: "Mei", sales: 2200000 },
-    { month: "Jun", sales: 1900000 },
-  ];
-  const maxSales = Math.max(...salesData.map(d => d.sales));
+  // Build sales data for chart from revenue; fallback to dummy if empty
+  const monthNames = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+  const computedSalesData = (() => {
+    if (revenue.length === 0) {
+      return [
+        { monthLabel: "Jan", sales: 0 },
+        { monthLabel: "Feb", sales: 0 },
+        { monthLabel: "Mar", sales: 0 },
+        { monthLabel: "Apr", sales: 0 },
+        { monthLabel: "Mei", sales: 0 },
+        { monthLabel: "Jun", sales: 0 },
+      ];
+    }
+    // take last 6 entries by year/month
+    const sorted = [...revenue].sort((a, b) => a.year !== b.year ? a.year - b.year : a.month - b.month);
+    const last6 = sorted.slice(-6);
+    return last6.map(r => ({ monthLabel: `${monthNames[r.month-1]} ${String(r.year).slice(-2)}`, sales: r.amount }));
+  })();
+  const maxSales = Math.max(1, ...computedSalesData.map(d => d.sales));
 
   // Load store and products based on logged-in seller
   useEffect(() => {
@@ -140,6 +157,18 @@ export const DashboardSeller: React.FC = () => {
       }
     }
   }, [user]);
+
+  // Load revenue when storeData is available
+  useEffect(() => {
+    if (!storeData) return;
+    try {
+      const db = JSON.parse(localStorage.getItem("seller_revenue") || "{}");
+      const list: RevenueRecord[] = Array.isArray(db[storeData.id]) ? db[storeData.id] : [];
+      setRevenue(list);
+    } catch {
+      setRevenue([]);
+    }
+  }, [storeData]);
 
   // Add or update product
   const handleAddProduct = (e: React.FormEvent) => {
@@ -294,6 +323,33 @@ export const DashboardSeller: React.FC = () => {
     localStorage.setItem("seller_stores", JSON.stringify(existingStores));
   };
 
+  // Revenue helpers
+  const saveRevenue = (records: RevenueRecord[]) => {
+    if (!storeData) return;
+    const db = JSON.parse(localStorage.getItem("seller_revenue") || "{}");
+    db[storeData.id] = records;
+    localStorage.setItem("seller_revenue", JSON.stringify(db));
+    setRevenue(records);
+  };
+
+  const addOrUpdateRevenue = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!storeData) return;
+    const amountNum = Number.parseInt(revForm.amount || "0");
+    if (!amountNum || amountNum < 0) {
+      alert("Masukkan nominal pendapatan yang valid");
+      return;
+    }
+    const list = [...revenue];
+    const idx = list.findIndex(r => r.year === revForm.year && r.month === revForm.month);
+    if (idx >= 0) list[idx] = { year: revForm.year, month: revForm.month, amount: amountNum };
+    else list.push({ year: revForm.year, month: revForm.month, amount: amountNum });
+    // sort by date
+    list.sort((a,b) => a.year !== b.year ? a.year - b.year : a.month - b.month);
+    saveRevenue(list);
+    alert("Pendapatan bulanan tersimpan");
+  };
+
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-green-50 to-white">
@@ -371,9 +427,16 @@ export const DashboardSeller: React.FC = () => {
                 <div className="text-xs text-gray-400">Produk aktif di toko Anda</div>
               </div>
               <div className="bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center border-t-4 border-blue-500">
-                <div className="text-gray-500 text-sm font-semibold mb-2">Penjualan (dummy)</div>
-                <div className="text-5xl font-extrabold text-blue-600 mb-1">Rp 1.2jt</div>
-                <div className="text-xs text-gray-400">Estimasi bulan ini</div>
+                <div className="text-gray-500 text-sm font-semibold mb-2">Pendapatan Bulan Ini</div>
+                <div className="text-5xl font-extrabold text-blue-600 mb-1">
+                  {(() => {
+                    const now = new Date();
+                    const rec = revenue.find(r => r.year === now.getFullYear() && r.month === (now.getMonth()+1));
+                    const amt = rec?.amount || 0;
+                    return `Rp ${amt.toLocaleString("id-ID")}`;
+                  })()}
+                </div>
+                <div className="text-xs text-gray-400">Diambil dari input pendapatan</div>
               </div>
               <div className="bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center border-t-4 border-yellow-400">
                 <div className="text-gray-500 text-sm font-semibold mb-2">Rating Toko</div>
@@ -382,16 +445,59 @@ export const DashboardSeller: React.FC = () => {
               </div>
             </div>
 
+            {/* Revenue Input */}
+            <div className="bg-white rounded-2xl shadow-lg p-6">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Tambah/Update Pendapatan Bulanan</h3>
+              <form onSubmit={addOrUpdateRevenue} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Bulan</label>
+                  <select
+                    value={revForm.month}
+                    onChange={(e) => setRevForm({ ...revForm, month: Number(e.target.value) })}
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                  >
+                    {monthNames.map((m, i) => (
+                      <option key={i} value={i+1}>{m}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Tahun</label>
+                  <input
+                    type="number"
+                    value={revForm.year}
+                    onChange={(e) => setRevForm({ ...revForm, year: Number(e.target.value) })}
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Nominal (Rp)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={revForm.amount}
+                    onChange={(e) => setRevForm({ ...revForm, amount: e.target.value })}
+                    placeholder="cth: 1200000"
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <button type="submit" className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition">Simpan</button>
+                  <button type="button" onClick={() => setRevForm((p) => ({ ...p, amount: "" }))} className="px-4 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-100 transition">Reset</button>
+                </div>
+              </form>
+            </div>
+
             {/* Sales Chart */}
             <div className="bg-white rounded-2xl shadow-lg p-8">
               <div className="flex items-center gap-2 mb-6">
                 <BarChart3 className="text-blue-600" size={24} />
-                <h3 className="text-xl font-bold text-gray-900">Grafik Penjualan 6 Bulan Terakhir</h3>
+                <h3 className="text-xl font-bold text-gray-900">Grafik Pendapatan 6 Bulan Terakhir</h3>
               </div>
               <div className="space-y-4">
-                {salesData.map((data, idx) => (
+                {computedSalesData.map((data, idx) => (
                   <div key={idx} className="flex items-center gap-4">
-                    <div className="w-16 text-sm font-semibold text-gray-600">{data.month}</div>
+                    <div className="w-20 text-sm font-semibold text-gray-600">{data.monthLabel}</div>
                     <div className="flex-1 bg-gray-100 rounded-full h-10 relative overflow-hidden">
                       <div
                         className="bg-gradient-to-r from-blue-500 to-green-500 h-full rounded-full flex items-center justify-end pr-4 transition-all duration-500"
