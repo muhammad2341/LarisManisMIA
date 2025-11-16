@@ -119,7 +119,10 @@ export const Cart: React.FC = () => {
             Pesan & Ambil di Toko
           </h1>
           <p className="text-gray-600 mt-2">
-            📦 Pesan sekarang → 📅 Pilih waktu pengambilan → 🏪 Bayar tunai saat ambil barang (COD)
+            📦 Pesan sekarang → 📅 Pilih waktu pengambilan tunai saat ambil barang (COD)
+          </p>
+          <p className="text-gray-600 mt-2">
+            📦 Pesan sekarang → 📅 Pilih waktu pengambilan tunai saat ambil barang (COD)
           </p>
         </div>
 

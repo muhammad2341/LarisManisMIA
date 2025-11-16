@@ -79,11 +79,6 @@ export const HomeBuyer: React.FC = () => {
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }}></div>
       </div>
 
-      {/* Carousel Section */}
-      <section className="relative py-8 px-4 md:px-8 lg:px-12 max-w-7xl mx-auto">
-        <Carousel items={advertisementBanners} />
-      </section>
-
       {/* Chatbot CTA above Search */}
       <section className="relative px-4 md:px-8 lg:px-12 max-w-7xl mx-auto">
         <div className="mb-4 rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50 p-4 flex items-center justify-between">
